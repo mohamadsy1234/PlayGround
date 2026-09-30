@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Digital Twin Analytics</h1>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <h3>Total Customers</h3>
+        <p class="value" id="totalCustomers">0</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Active Conversations</h3>
+        <p class="value" id="activeConversations">0</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Conversions Today</h3>
+        <p class="value" id="conversionsToday">0</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Est. Revenue</h3>
+        <p class="value" id="estimatedRevenue">€0</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Sales Funnel</h2>
+      <div id="salesFunnel"></div>
+    </div>
+
+    <div class="section">
+      <h2>By Country</h2>
+      <div id="countryBreakdown"></div>
+    </div>
+
+    <div class="section">
+      <h2>Recent Sessions</h2>
+      <table id="sessionsTable">
+        <thead>
+          <tr>
+            <th>Phone</th>
+            <th>Country</th>
+            <th>Document</th>
+            <th>State</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="sessionsTbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

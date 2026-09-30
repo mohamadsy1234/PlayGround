@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin Control</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Digital Twin</h1>
+    
+    <div class="toggle-section">
+      <label class="toggle-switch">
+        <input type="checkbox" id="autoModeToggle">
+        <span class="slider"></span>
+      </label>
+      <span id="status">Auto Mode: OFF</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="label">Messages/Hour</span>
+        <span class="value" id="messagesPerHour">0/40</span>
+      </div>
+      <div class="stat">
+        <span class="label">Messages/10min</span>
+        <span class="value" id="messagesPerTenMin">0/12</span>
+      </div>
+      <div class="stat">
+        <span class="label">Consecutive</span>
+        <span class="value" id="consecutiveReplies">0</span>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="dashboardBtn" class="btn-primary">📊 Dashboard</button>
+      <button id="settingsBtn" class="btn-secondary">⚙️ Settings</button>
+    </div>
+
+    <div class="info">
+      <small>Last update: <span id="lastUpdate">--:--</span></small>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

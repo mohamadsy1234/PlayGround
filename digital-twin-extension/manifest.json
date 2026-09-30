@@ -1,0 +1,83 @@
+{
+  "manifest_version": 3,
+  "name": "Digital Twin — نسختك الرقمية على WhatsApp Web",
+  "version": "0.1.0",
+  "description": "مساعدك الشخصي على WhatsApp Web: ردود مؤتمتة بأسلوبك، تحليلات، CRM، وكشف نية شراء — كل شيء داخل متصفحك.",
+  "author": "Digital Twin Project",
+
+  "permissions": [
+    "storage",
+    "notifications",
+    "alarms"
+  ],
+
+  "host_permissions": [
+    "https://web.whatsapp.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": [
+        "lib/language.js",
+        "lib/intent.js",
+        "lib/nucleus.js",
+        "lib/storage.js",
+        "lib/wa-adapter.js",
+        "lib/humanizer.js",
+        "content-script.js"
+      ],
+      "css": ["content-styles.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Digital Twin — نسختك الرقمية",
+    "default_icon": {
+      "16":  "icons/icon-16.png",
+      "48":  "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+
+  "options_page": "options/options.html",
+
+  "web_accessible_resources": [
+    {
+      "resources": ["dashboard/dashboard.html", "assets/*"],
+      "matches":   ["https://web.whatsapp.com/*"]
+    }
+  ],
+
+  "icons": {
+    "16":  "icons/icon-16.png",
+    "48":  "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "commands": {
+    "toggle-automation": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A",
+        "mac":     "Command+Shift+A"
+      },
+      "description": "تشغيل/إيقاف الأتمتة (وضع 'أنا تعبت')"
+    },
+    "insert-template-1": {
+      "suggested_key": { "default": "Ctrl+Shift+1" },
+      "description": "لصق القالب رقم 1 (الترحيب)"
+    },
+    "open-dashboard": {
+      "suggested_key": { "default": "Ctrl+Shift+D" },
+      "description": "فتح لوحة التحليلات"
+    }
+  }
+}

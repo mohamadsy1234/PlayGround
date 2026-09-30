@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2310b981'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%23022c22'%3E%E2%A4%93%3C/text%3E%3C/svg%3E">
+    <title>WhatsApp Empire Pro v4.0 - لوحة التحكم والتحليل المتقدمة</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b',
+                            950: '#022c22'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.6); }
+
+        /* Waveform Animation */
+        .wave-bar {
+            animation: wave 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes wave {
+            0% { height: 20%; }
+            100% { height: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- Top Navigation Header -->
+    <header class="glass-panel sticky top-0 z-40 border-b border-slate-800/80 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-4 space-x-reverse">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-slate-950 font-black text-2xl">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="font-extrabold text-lg text-white tracking-wide">WhatsApp Empire Pro</h1>
+                    <span class="text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">Chrome Engine v4.0</span>
+                </div>
+                <p class="text-xs text-slate-400 hidden sm:block">نظام الأتمتة الشبح المستقل لإدارة صفقات أوروبا (فرنسا، بلجيكا، إيطاليا، إسبانيا)</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-full">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="text-xs font-medium text-emerald-400">متصل بـ WhatsApp Web | Latency: 18ms</span>
+            </div>
+
+            <button onclick="toggleSidebarPreview()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2 text-slate-200">
+                <i class="fa-solid fa-window-restore text-emerald-400"></i>
+                <span class="hidden sm:inline">معاينة إضافة المتصفح (Overlay)</span>
+            </button>
+
+            <button onclick="triggerGlobalSync()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/10">
+                <i class="fa-solid fa-rotate"></i>
+                <span>مزامنة المحرك</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sidebar Navigation & Quick Toggles -->
+        <aside class="lg:col-span-1 space-y-5">
+            <!-- Navigation Menu -->
+            <div class="glass-panel p-3.5 rounded-2xl space-y-1.5">
+                <p class="text-[11px] font-bold text-slate-400 px-3 uppercase tracking-wider my-2">أقسام اللوحة المتقدمة</p>
+
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold text-sm transition">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-chart-line w-5 text-center"></i> المؤشرات والمبيعات</span>
+                    <span class="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full">مباشر</span>
+                </button>
+
+                <button onclick="switchTab('simulator')" id="nav-simulator" class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-slate-300 hover:bg-slate-900 hover:text-white font-semibold text-sm transition">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-comments w-5 text-center"></i> محاكي واتساب الحي</span>
+                    <span class="text-[10px] bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded-full">Live Chat</span>
+                </button>
+
+                <button onclick="switchTab('voices')" id="nav-voices" class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-slate-300 hover:bg-slate-900 hover:text-white font-semibold text-sm transition">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-microphone-lines w-5 text-center"></i> استوديو البصمات الصوتية</span>
+                    <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">4 مقاطع</span>
+                </button>
+
+                <button onclick="switchTab('ocr')" id="nav-ocr" class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-slate-300 hover:bg-slate-900 hover:text-white font-semibold text-sm transition">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-receipt w-5 text-center"></i> فاحص إيصالات Ria (OCR)</span>
+                    <span class="text-[10px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">ذكاء آلي</span>
+                </button>
+
+                <button onclick="switchTab('rules')" id="nav-rules" class="w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-slate-300 hover:bg-slate-900 hover:text-white font-semibold text-sm transition">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-sliders w-5 text-center"></i> قواعد الشبح والدوافع</span>
+                    <span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">إعدادات</span>
+                </button>
+            </div>
+
+            <!-- Operational Mode Panel -->
+            <div class="glass-panel p-5 rounded-2xl space-y-4 border border-slate-800">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-400"></i> وضع التشغيل الأمني
+                </h3>
+
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm font-semibold text-white">الطيار الآلي الكامل</p>
+                        <p class="text-[11px] text-slate-400">الرد والتحقق والإرسال الذاتي</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer" id="autoPilotToggle" onchange="toggleAutoPilot()">
+                        <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm font-semibold text-white">الموافقة البشرية المسبقة</p>
+                        <p class="text-[11px] text-slate-400">طلب اعتمادك قبل الإرسال</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer" id="humanApprovalToggle" onchange="toggleApprovalMode()">
+                        <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                    </label>
+                </div>
+
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 text-xs text-slate-400 space-y-1">
+                    <div class="flex justify-between text-slate-300">
+                        <span>محاكاة كتابة البشر:</span>
+                        <span class="font-mono text-emerald-400 font-bold">25 ثانية</span>
+                    </div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>نوع البصمة الصوتية:</span>
+                        <span class="font-mono text-emerald-400 font-bold">PTT (Push to Talk)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Markets Status -->
+            <div class="glass-panel p-5 rounded-2xl space-y-3 border border-slate-800">
+                <p class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-earth-europe text-teal-400"></i> استهداف أسواق الشتات
+                </p>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between items-center p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> فرنسا (الإقامة والبطاقات)</span>
+                        <span class="font-mono text-emerald-400 font-bold">14 طلب</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> إيطاليا (رخص القيادة)</span>
+                        <span class="font-mono text-emerald-400 font-bold">18 طلب</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded-lg bg-slate-900/60 border border-slate-800">
+                        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-400"></span> بلجيكا وإسبانيا</span>
+                        <span class="font-mono text-teal-400 font-bold">9 طلبات</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="lg:col-span-3 space-y-6">
+
+            <!-- TAB 1: DASHBOARD ANALYTICS -->
+            <div id="tab-dashboard" class="space-y-6">
+                <!-- Top Metric Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-panel p-4 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">مبيعات المؤتمتة اليوم</p>
+                                <h3 class="text-2xl font-black text-white mt-1">1,850 €</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-euro-sign text-lg"></i>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-emerald-400 mt-2 inline-block font-semibold"><i class="fa-solid fa-arrow-trend-up ml-1"></i> +22.4% عن الأمس</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">محادثات نشطة الآن</p>
+                                <h3 class="text-2xl font-black text-white mt-1">34 زبون</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-comments text-lg"></i>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-teal-400 mt-2 inline-block font-semibold"><i class="fa-solid fa-bolt ml-1"></i> رد فوري بالصوت والنموذج</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">حوالات Ria المُحققة</p>
+                                <h3 class="text-2xl font-black text-white mt-1">16 إيصال</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-receipt text-lg"></i>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-sky-400 mt-2 inline-block font-semibold"><i class="fa-solid fa-check-double ml-1"></i> دقة OCR بنسبة 99.4%</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">معدل تحويل الإغلاق</p>
+                                <h3 class="text-2xl font-black text-white mt-1">84.2%</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-bullseye text-lg"></i>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-amber-400 mt-2 inline-block font-semibold"><i class="fa-solid fa-fire ml-1"></i> إغلاق صفقات بدون تدخل</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h2 class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-chart-area text-emerald-400"></i> تدفق المبيعات المؤتمتة خلال الـ 7 أيام الماضية (€)
+                            </h2>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-500/20">تحديث آلي</span>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="salesTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <h2 class="font-bold text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-pie-chart text-teal-400"></i> توزيع المبيعات حسب الدولة
+                        </h2>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="countryDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Activity Feed -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="font-bold text-white text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-stream text-emerald-400"></i> سجل العمليات المؤتمتة في الخلفية (Live Stream)
+                        </h2>
+                        <span class="text-xs bg-slate-900 text-slate-400 px-3 py-1 rounded-full border border-slate-800">مُتصل بـ WhatsApp Web</span>
+                    </div>
+
+                    <div class="space-y-2.5" id="liveActivityFeed">
+                        <!-- Feed Item 1 -->
+                        <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs hover:border-emerald-500/30 transition">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-microphone"></i></span>
+                                <div>
+                                    <p class="font-bold text-white">إرسال الصوت الترحيبي الأول (Voice Note 1)</p>
+                                    <p class="text-slate-400">الزبون: +33 7 52 XX XX (فرنسا - طلب إقامة)</p>
+                                </div>
+                            </div>
+                            <span class="font-mono text-emerald-400">منذ 45 ثانية</span>
+                        </div>
+
+                        <!-- Feed Item 2 -->
+                        <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs hover:border-teal-500/30 transition">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-video"></i></span>
+                                <div>
+                                    <p class="font-bold text-white">إرسال فيديو نموذج رخصة إيطاليا</p>
+                                    <p class="text-slate-400">الزبون: +39 3 28 XX XX (إيطاليا - طلب رخصة قيادة)</p>
+                                </div>
+                            </div>
+                            <span class="font-mono text-teal-400">منذ 3 دقائق</span>
+                        </div>
+
+                        <!-- Feed Item 3 -->
+                        <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs hover:border-sky-500/30 transition">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-receipt"></i></span>
+                                <div>
+                                    <p class="font-bold text-white">فحص وتأكيد إيصال Ria (دفعة 104€)</p>
+                                    <p class="text-slate-400">MTCN: 849-204-1192 | الحالة: جاهز للسحب بنجاح</p>
+                                </div>
+                            </div>
+                            <span class="font-mono text-sky-400">منذ 8 دقائق</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: LIVE WHATSAPP WEB SIMULATOR -->
+            <div id="tab-simulator" class="space-y-6 hidden">
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex justify-between items-center flex-wrap gap-3">
+                        <div>
+                            <h2 class="font-bold text-white text-base flex items-center gap-2">
+                                <i class="fa-solid fa-comments text-emerald-400"></i> محاكي الواتساب الحي (Live Interactive Chat Simulation)
+                            </h2>
+                            <p class="text-xs text-slate-400">اختبر استجابة "الشبح الصوتي" آلياً دون لمس هاتفك وبشكل مباشر</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="simulateIncomingMessage('france')" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200">
+                                + محاكاة زبون فرنسا
+                            </button>
+                            <button onclick="simulateIncomingMessage('italy')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                                + محاكاة زبون إيطاليا
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp Web Mockup Container -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-3 h-[520px]">
+
+                        <!-- Chat List Sidebar -->
+                        <div class="md:col-span-1 border-b md:border-b-0 md:border-l border-slate-800 bg-slate-900/60 flex flex-col">
+                            <div class="p-3 border-b border-slate-800 font-bold text-xs text-slate-300 flex items-center justify-between">
+                                <span>المحادثات المفتوحة (3)</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            </div>
+                            <div class="flex-1 overflow-y-auto custom-scroll divide-y divide-slate-800/50">
+                                <div onclick="selectChat('yassine')" id="chat-item-yassine" class="p-3 bg-emerald-500/10 border-r-4 border-emerald-500 cursor-pointer transition">
+                                    <div class="flex justify-between items-start">
+                                        <p class="font-bold text-xs text-white">ياسين (باريس - فرنسا)</p>
+                                        <span class="text-[10px] text-emerald-400 font-mono">1:42 PM</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 truncate mt-1">بغيت نسألك على إقامة فرنسا خويا...</p>
+                                    <span class="inline-block text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded mt-1">تم إرسال الصوت 1</span>
+                                </div>
+
+                                <div onclick="selectChat('karem')" id="chat-item-karem" class="p-3 hover:bg-slate-800/50 cursor-pointer transition">
+                                    <div class="flex justify-between items-start">
+                                        <p class="font-bold text-xs text-white">كريم (ميلانو - إيطاليا)</p>
+                                        <span class="text-[10px] text-slate-500 font-mono">1:15 PM</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 truncate mt-1">أرسل لي نموذج رخصة القيادة عفاك</p>
+                                    <span class="inline-block text-[9px] bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded mt-1">تم إرسال الفيديو</span>
+                                </div>
+
+                                <div onclick="selectChat('samir')" id="chat-item-samir" class="p-3 hover:bg-slate-800/50 cursor-pointer transition">
+                                    <div class="flex justify-between items-start">
+                                        <p class="font-bold text-xs text-white">سمير (بروكسل - بلجيكا)</p>
+                                        <span class="text-[10px] text-slate-500 font-mono">12:30 PM</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 truncate mt-1">ها هو وصل Ria نتاع 104 أورو</p>
+                                    <span class="inline-block text-[9px] bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded mt-1">تم الفحص الآلي</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages Window -->
+                        <div class="md:col-span-2 flex flex-col bg-slate-950">
+                            <!-- Chat Active Header -->
+                            <div class="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold text-xs">ي</div>
+                                    <div>
+                                        <h4 class="font-bold text-xs text-white" id="activeChatTitle">ياسين (فرنسا - طلب بطاقة إقامة)</h4>
+                                        <p class="text-[10px] text-emerald-400" id="activeChatStatus">متصل الآن • رد الشبح الآلي جاهز</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] bg-slate-800 text-slate-400 px-2.5 py-1 rounded-full border border-slate-700">تأخير محاكي: 22 ثانية</span>
+                            </div>
+
+                            <!-- Chat Messages Stream -->
+                            <div class="flex-1 p-4 space-y-3 overflow-y-auto custom-scroll" id="simulatedMessagesBox">
+                                <!-- Customer Msg -->
+                                <div class="flex justify-start">
+                                    <div class="bg-slate-900 border border-slate-800 text-slate-200 p-3 rounded-2xl max-w-xs text-xs space-y-1">
+                                        <p>السلام عليكم أخويا، بغيت نسقسيك على الوثائق نتاع فرنسا واش متوفرة عندك؟</p>
+                                        <span class="block text-[9px] text-slate-500 text-left font-mono">1:40 PM</span>
+                                    </div>
+                                </div>
+
+                                <!-- Bot Automated Voice Response -->
+                                <div class="flex justify-end">
+                                    <div class="bg-emerald-600 text-white p-3 rounded-2xl max-w-xs text-xs space-y-2 shadow-lg">
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="playVoiceNoteDemo(1)" class="w-7 h-7 rounded-full bg-white text-emerald-700 flex items-center justify-center shrink-0">
+                                                <i class="fa-solid fa-play text-xs"></i>
+                                            </button>
+                                            <div class="flex-1">
+                                                <p class="font-bold text-[11px]">🎤 بصمة صوتية ترحيبية (Voice Note 1)</p>
+                                                <p class="text-[9px] text-emerald-100">"سلام أخويا كدير سافاه الصحة بخير..."</p>
+                                            </div>
+                                        </div>
+                                        <span class="block text-[9px] text-emerald-200 text-left font-mono">1:41 PM • تم الرد آلياً</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chat Input Footer -->
+                            <div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+                                <input type="text" id="simManualInput" placeholder="اكتب رسالة تجريبية كأنك الزبون..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                <button onclick="sendSimulatedUserMessage()" class="bg-emerald-500 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-400 transition">
+                                    إرسال
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: VOICE NOTES VAULT & MEDIA STUDIO -->
+            <div id="tab-voices" class="space-y-6 hidden">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div>
+                            <h2 class="font-bold text-white text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-microphone-lines text-emerald-400"></i> استوديو ومكتبة البصمات الصوتية (Voice Notes Matrix)
+                            </h2>
+                            <p class="text-xs text-slate-400">المقاطع الصوتية المسجلة بنبرتك الحقيقية والتي ترفعها الإضافة كرسائل Ptt مباشرة للزبائن</p>
+                        </div>
+                        <button onclick="showToast('تم تحديث أصول التسجيلات الصوتية', 'success')" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-lg border border-slate-700 text-slate-200">
+                            + رفع مقطع صوتي جديد
+                        </button>
+                    </div>
+
+                    <!-- Voice Cards Grid -->
+                    <div class="space-y-3">
+                        <!-- Voice 1 -->
+                        <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between flex-wrap gap-3 hover:border-emerald-500/40 transition">
+                            <div class="flex items-center gap-4">
+                                <button onclick="playVoiceNoteDemo(1)" id="btn-voice-1" class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center hover:bg-emerald-500 hover:text-slate-950 transition text-lg shrink-0">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">1. صوت الترحب والسؤال عن نوع الطلب</h4>
+                                    <p class="text-xs text-slate-400">"سلام أخويا كدير سافاه الصحة بخير تفضل أخويا ايش محتاج أتفضل؟"</p>
+                                    <span class="text-[10px] text-emerald-400 font-mono mt-1 inline-block">المدة: 0:08 • الصيغة: opus/ptt</span>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-semibold">نشط وجاهز</span>
+                        </div>
+
+                        <!-- Voice 2 -->
+                        <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between flex-wrap gap-3 hover:border-emerald-500/40 transition">
+                            <div class="flex items-center gap-4">
+                                <button onclick="playVoiceNoteDemo(2)" id="btn-voice-2" class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center hover:bg-emerald-500 hover:text-slate-950 transition text-lg shrink-0">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">2. صوت عرض نموذج العمل بالفيديو</h4>
+                                    <p class="text-xs text-slate-400">"ما في مشكلة يا أخي موجود تحب نرسل لك بداية النموذج فيديو للعمل تشوفه..."</p>
+                                    <span class="text-[10px] text-emerald-400 font-mono mt-1 inline-block">المدة: 0:12 • الصيغة: opus/ptt</span>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-semibold">نشط وجاهز</span>
+                        </div>
+
+                        <!-- Voice 3 -->
+                        <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between flex-wrap gap-3 hover:border-emerald-500/40 transition">
+                            <div class="flex items-center gap-4">
+                                <button onclick="playVoiceNoteDemo(3)" id="btn-voice-3" class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center hover:bg-emerald-500 hover:text-slate-950 transition text-lg shrink-0">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">3. صوت التمهيد للشرح والتأكيد قبل إرسال المقطع</h4>
+                                    <p class="text-xs text-slate-400">"بداية أخي راح أرسل لك فيديو نموذج العمل تشوفه ومن بعدها نفهمك التفاصيل..."</p>
+                                    <span class="text-[10px] text-emerald-400 font-mono mt-1 inline-block">المدة: 0:10 • الصيغة: opus/ptt</span>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-semibold">نشط وجاهز</span>
+                        </div>
+
+                        <!-- Voice 4 -->
+                        <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between flex-wrap gap-3 hover:border-emerald-500/40 transition">
+                            <div class="flex items-center gap-4">
+                                <button onclick="playVoiceNoteDemo(4)" id="btn-voice-4" class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center hover:bg-emerald-500 hover:text-slate-950 transition text-lg shrink-0">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <div>
+                                    <h4 class="font-bold text-sm text-white">4. صوت الشرح الكامل للسعر (250€) والآلية (104€ مقدم)</h4>
+                                    <p class="text-xs text-slate-400">"أخوي بالنسبة لآلية العمل السومة نتاعها 250 أورو، تبعث 104 أورو مقدم وباقي المبلغ بعد الفحص..."</p>
+                                    <span class="text-[10px] text-emerald-400 font-mono mt-1 inline-block">المدة: 0:24 • الصيغة: opus/ptt</span>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-semibold">نشط وجاهز</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: RIA RECEIPT OCR TESTER -->
+            <div id="tab-ocr" class="space-y-6 hidden">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+                    <div>
+                        <h2 class="font-bold text-white text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-receipt text-sky-400"></i> فاحص ومحلل إيصالات Ria بالذكاء الاصطناعي (OCR Receipt Engine)
+                        </h2>
+                        <p class="text-xs text-slate-400">قم برفع أو محاكاة فحص إيصال تحويل Ria لاستخراج رقم MTCN والمبلغ واسم المرسل وتأكيد الدفعة تلقائياً</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Upload Box -->
+                        <div class="border-2 border-dashed border-slate-800 hover:border-sky-500/50 rounded-2xl p-6 text-center space-y-3 bg-slate-900/40 transition cursor-pointer" onclick="runOcrSimulation()">
+                            <div class="w-12 h-12 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center mx-auto text-xl">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-white">اضغط للتحميل أو اسحب صورة الإيصال هنا</p>
+                                <p class="text-xs text-slate-500">يدعم صيغ JPG, PNG, WEBP (حجم أقصى 10MB)</p>
+                            </div>
+                            <button class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition">
+                                تجربة فحص إيصال نموذجي آلياً
+                            </button>
+                        </div>
+
+                        <!-- Extraction Output Box -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4" id="ocrOutputContainer">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                                <h4 class="font-bold text-xs text-slate-300">نتائج الاستخراج الآلي (OCR Results)</h4>
+                                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono">Status: Verified</span>
+                            </div>
+
+                            <div class="space-y-2.5 text-xs font-mono">
+                                <div class="flex justify-between p-2 bg-slate-950 rounded-lg border border-slate-800/80">
+                                    <span class="text-slate-400">رقم الحوالة (MTCN):</span>
+                                    <span class="text-emerald-400 font-bold" id="ocrMtcn">849-204-1192</span>
+                                </div>
+                                <div class="flex justify-between p-2 bg-slate-950 rounded-lg border border-slate-800/80">
+                                    <span class="text-slate-400">المبلغ المحوّل:</span>
+                                    <span class="text-white font-bold" id="ocrAmount">104.00 EUR</span>
+                                </div>
+                                <div class="flex justify-between p-2 bg-slate-950 rounded-lg border border-slate-800/80">
+                                    <span class="text-slate-400">اسم المرسل:</span>
+                                    <span class="text-slate-200" id="ocrSender">YASSINE BENALI</span>
+                                </div>
+                                <div class="flex justify-between p-2 bg-slate-950 rounded-lg border border-slate-800/80">
+                                    <span class="text-slate-400">البلد المصدر:</span>
+                                    <span class="text-slate-200" id="ocrCountry">FRANCE (FR)</span>
+                                </div>
+                            </div>
+
+                            <button onclick="showToast('تم قبول الدفعة وإرسال التنسيق الآلي للعميل', 'success')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs py-2.5 rounded-xl transition">
+                                <i class="fa-solid fa-check-double ml-1"></i> اعتماد الدفعة وإرسال التأكيد للزبون
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: AUTOMATION RULES & DIALECT SETTINGS -->
+            <div id="tab-rules" class="space-y-6 hidden">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+                    <h2 class="font-bold text-white text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-emerald-400"></i> ضبط قواعد الذكاء الاصطناعي واللهجات المغاربية
+                    </h2>
+                    <p class="text-xs text-slate-400">تخصيص كيف يتعرف المحرك على نية الزبون ويرد بالدارجة المناسبة</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
+                            <label class="text-xs font-bold text-slate-300">الكلمات المفتاحية المكتشفة تلقائياً</label>
+                            <input type="text" value="إيطاليا, فرانسا, بلجيكا, رخصة, كارتة, سومة, تسجيل, طاليان" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
+                            <label class="text-xs font-bold text-slate-300">التأخير الزمني البشري (بالثواني)</label>
+                            <input type="number" value="25" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
+                        <label class="text-xs font-bold text-slate-300">توجيه النظام الأساسي (System Prompt للبوت الشبح)</label>
+                        <textarea rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">أنت بائع محترف تتحدث بالدارجة المغاربية (المغربية والجزائرية والتونسية). هدفك إرسال التسجيل الصوتي الأول للترحيب، ثم عرض فيديو النموذج، ثم شرح آلية الدفع على دفعتين (104 مقدم والباقي بعد المعاينة والفحص). كن هادئاً ومقنعاً ولا تظهر كأنك روبوت.</textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3">
+                        <button onclick="exportSettingsJson()" class="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2.5 rounded-xl border border-slate-700 text-slate-200">
+                            <i class="fa-solid fa-download ml-1"></i> تصدير الإعدادات JSON
+                        </button>
+                        <button onclick="showToast('تم حفظ القواعد وتحديث إضافة المتصفح بنجاح', 'success')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-6 py-2.5 rounded-xl transition">
+                            حفظ وتطبيق التغييرات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Floating Extension Overlay Preview Modal -->
+    <div id="extensionOverlayModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-4xl rounded-2xl border border-slate-700 overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <h3 class="font-bold text-sm text-white">معاينة ظهور الإضافة كـ Widget داخل WhatsApp Web</h3>
+                </div>
+                <button onclick="toggleSidebarPreview()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 bg-slate-950 overflow-y-auto space-y-4 text-xs text-slate-300">
+                <p>هكذا تظهر لوحة التحكم المصغرة للمساعد الشبح مباشرة على يمين شاشة <span class="text-emerald-400 font-mono">web.whatsapp.com</span> أثناء تصفحك للرسائل:</p>
+                <div class="border border-slate-800 rounded-xl p-4 bg-slate-900/90 space-y-3 max-w-sm mx-auto shadow-2xl">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="font-bold text-emerald-400">🤖 Empire Ghost Widget</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Active</span>
+                    </div>
+                    <div class="space-y-2">
+                        <button onclick="showToast('تم إرسال الصوت الترحيبي بنجاح بنقرة واحدة', 'success')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-center transition">
+                            🎤 إرسال بصمة صوت 1 (ترحيب)
+                        </button>
+                        <button onclick="showToast('تم إرسال نموذج فيديو إيطاليا بنجاح', 'success')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2 rounded-lg text-center border border-slate-700 transition">
+                            🎥 إرسال فيديو نموذج إيطاليا
+                        </button>
+                        <button onclick="showToast('تم إرسال شرح السعر والشرط (250€)', 'success')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2 rounded-lg text-center border border-slate-700 transition">
+                            💶 إرسال بصمة صوت 4 (السعر 250€)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 left-6 z-50 space-y-2"></div>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Tab Switcher Logic
+        function switchTab(tabId) {
+            ['dashboard', 'simulator', 'voices', 'ocr', 'rules'].forEach(id => {
+                document.getElementById('tab-' + id).classList.add('hidden');
+                const navBtn = document.getElementById('nav-' + id);
+                if (navBtn) {
+                    navBtn.classList.remove('bg-emerald-500/15', 'text-emerald-400', 'border', 'border-emerald-500/30', 'font-bold');
+                    navBtn.classList.add('text-slate-300', 'hover:bg-slate-900', 'hover:text-white');
+                }
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.remove('text-slate-300', 'hover:bg-slate-900', 'hover:text-white');
+                activeNav.classList.add('bg-emerald-500/15', 'text-emerald-400', 'border', 'border-emerald-500/30', 'font-bold');
+            }
+        }
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `glass-panel px-4 py-3 rounded-xl text-xs flex items-center gap-3 shadow-2xl border ${
+                type === 'success' ? 'border-emerald-500/50 text-emerald-300' : 'border-sky-500/50 text-sky-300'
+            } transition duration-300 transform translate-y-0`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-info-circle text-sky-400'} text-base"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        // Toggle Settings Functions
+        function toggleAutoPilot() {
+            const isChecked = document.getElementById('autoPilotToggle').checked;
+            showToast(isChecked ? 'تم تفعيل الطيار الآلي بنجاح على المتصفح' : 'تم تحويل النظام للوضع اليدوي المؤقت', isChecked ? 'success' : 'info');
+        }
+
+        function toggleApprovalMode() {
+            const isChecked = document.getElementById('humanApprovalToggle').checked;
+            showToast(isChecked ? 'تم تفعيل وضع الموافقة المسبقة قبل كل إرسال' : 'تم إلغاء الموافقة المسبقة (إرسال تلقائي مباشر)', 'info');
+        }
+
+        function triggerGlobalSync() {
+            showToast('تمت مزامنة قوالب الصوت والفيديوهات مع محاكي الأندرويد ومتصفح إسطنبول', 'success');
+        }
+
+        function toggleSidebarPreview() {
+            const modal = document.getElementById('extensionOverlayModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Voice Note Demo Player Simulator
+        let currentPlaying = null;
+        function playVoiceNoteDemo(voiceNum) {
+            if (currentPlaying) {
+                const prevBtn = document.getElementById(`btn-voice-${currentPlaying}`);
+                if(prevBtn) prevBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+            }
+
+            if (currentPlaying === voiceNum) {
+                currentPlaying = null;
+                showToast('تم إيقاف المقطع الصوتي', 'info');
+                return;
+            }
+
+            currentPlaying = voiceNum;
+            const btn = document.getElementById(`btn-voice-${voiceNum}`);
+            if(btn) btn.innerHTML = `<i class="fa-solid fa-pause text-amber-400"></i>`;
+            showToast(`جاري تشغيل المعاينة الصوتية لمقطع البصمة #${voiceNum}`, 'success');
+
+            setTimeout(() => {
+                if (currentPlaying === voiceNum) {
+                    if(btn) btn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+                    currentPlaying = null;
+                }
+            }, 4000);
+        }
+
+        // Live WhatsApp Simulator Logic
+        function selectChat(chatKey) {
+            ['yassine', 'karem', 'samir'].forEach(k => {
+                const item = document.getElementById(`chat-item-${k}`);
+                if (item) item.classList.remove('bg-emerald-500/10', 'border-r-4', 'border-emerald-500');
+            });
+
+            const activeItem = document.getElementById(`chat-item-${chatKey}`);
+            if (activeItem) activeItem.classList.add('bg-emerald-500/10', 'border-r-4', 'border-emerald-500');
+
+            const titleMap = {
+                yassine: 'ياسين (باريس - فرنسا)',
+                karem: 'كريم (ميلانو - إيطاليا)',
+                samir: 'سمير (بروكسل - بلجيكا)'
+            };
+
+            document.getElementById('activeChatTitle').innerText = titleMap[chatKey] || 'محادثات العميل';
+            showToast(`تم فتح محادثة ${titleMap[chatKey]}`, 'info');
+        }
+
+        function sendSimulatedUserMessage() {
+            const input = document.getElementById('simManualInput');
+            if (!input.value.trim()) return;
+
+            const box = document.getElementById('simulatedMessagesBox');
+
+            // User Msg
+            const uMsg = document.createElement('div');
+            uMsg.className = 'flex justify-start';
+            uMsg.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-200 p-3 rounded-2xl max-w-xs text-xs space-y-1">
+                <p>${input.value}</p>
+                <span class="block text-[9px] text-slate-500 text-left font-mono">الآن</span>
+            </div>`;
+            box.appendChild(uMsg);
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // Automated Bot Reply
+            setTimeout(() => {
+                const bMsg = document.createElement('div');
+                bMsg.className = 'flex justify-end';
+                bMsg.innerHTML = `<div class="bg-emerald-600 text-white p-3 rounded-2xl max-w-xs text-xs space-y-2 shadow-lg">
+                    <div class="flex items-center gap-2">
+                        <button class="w-7 h-7 rounded-full bg-white text-emerald-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-play text-xs"></i></button>
+                        <div class="flex-1">
+                            <p class="font-bold text-[11px]">🎤 [الشبح الآلي]: بصمة الشرح والسعر</p>
+                            <p class="text-[9px] text-emerald-100">"أخوي بالنسبة لآلية العمل السومة..."</p>
+                        </div>
+                    </div>
+                    <span class="block text-[9px] text-emerald-200 text-left font-mono">الآن • رد آلي</span>
+                </div>`;
+                box.appendChild(bMsg);
+                box.scrollTop = box.scrollHeight;
+                showToast('قام الشبح الآلي بالرد الصوتي على الزبون بنجاح!', 'success');
+            }, 1800);
+        }
+
+        function simulateIncomingMessage(country) {
+            switchTab('simulator');
+            showToast(`تم استقبال رسالة جديدة من زبون من ${country === 'france' ? 'فرنسا' : 'إيطاليا'}`, 'info');
+        }
+
+        // OCR Tester Logic
+        function runOcrSimulation() {
+            showToast('جاري تحليل صورة الإيصال واستخراج البيانات عبر EasyOCR...', 'info');
+            setTimeout(() => {
+                document.getElementById('ocrMtcn').innerText = '902-118-7341';
+                document.getElementById('ocrAmount').innerText = '104.00 EUR';
+                document.getElementById('ocrSender').innerText = 'KARIM AL-MANSOURI';
+                document.getElementById('ocrCountry').innerText = 'ITALY (IT)';
+                showToast('تم التحقق من إيصال Ria بنجاح! جاهز للاستلام.', 'success');
+            }, 1500);
+        }
+
+        function exportSettingsJson() {
+            const config = {
+                version: "4.0",
+                dialect: "Maghrebi",
+                humanDelaySeconds: 25,
+                autoPilot: true,
+                targetCountries: ["France", "Italy", "Belgium", "Spain"]
+            };
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'whatsapp_empire_config.json';
+            a.click();
+            showToast('تم تصدير ملف الإعدادات بنجاح', 'success');
+        }
+
+        // Initialize Dynamic Charts via Chart.js
+        window.addEventListener('DOMContentLoaded', () => {
+            // Sales Trend Chart
+            const salesCtx = document.getElementById('salesTrendChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'],
+                    datasets: [{
+                        label: 'المبيعات اليومية (€)',
+                        data: [1100, 1450, 1300, 1680, 1500, 1920, 1850],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { family: 'Cairo' } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { family: 'Cairo' } } }
+                    }
+                }
+            });
+
+            // Country Distribution Chart
+            const countryCtx = document.getElementById('countryDistributionChart').getContext('2d');
+            new Chart(countryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['إيطاليا', 'فرنسا', 'بلجيكا', 'إسبانيا'],
+                    datasets: [{
+                        data: [42, 33, 15, 10],
+                        backgroundColor: ['#10b981', '#14b8a6', '#0284c7', '#f59e0b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#cbd5e1', font: { family: 'Cairo', size: 11 } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
